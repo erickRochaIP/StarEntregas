@@ -1,0 +1,16 @@
+void viajePara (int *posicao, int situacaoPlanetas, int **planetas, int *tempo, int destino){
+	proximoPasso=djistraProximo(posicao, destino, planetas);
+	if(situacaoPlanetas[proximoPasso]==0){
+		tempo += planteas[proximoPasso];
+
+	}else{
+		tempo++;
+	}
+
+	situacaoPlanetas=atualizeSituacao(situacaoPlanetas);
+
+	if(posicao != destino){
+		viajePara(posicao, situacaoPlanetas, planetas, tempo, destino);
+	}
+
+}
