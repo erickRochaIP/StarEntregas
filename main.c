@@ -21,22 +21,17 @@ void grafo_dijkstra(plan ** grafo, int gfInicio, int * iCusto, int * gfAnterior)
 int dijkstra_pesototal(plan ** grafo, int origem, int destino);
 int dijkstra_proximo(plan ** grafo, int origem, int destino);
 
-int main(){
-    
-    plan ** grafo = malloc(sizeof**grafo * QPLANETAS); // Inicia o vetor da lista de adjacência
-    int i,j; // Auxiliares pro for
-    for (i = 0; i < QPLANETAS; i += 1){ // Inicia cada um dos planetas
-        grafo[i] = grafo_inicia(i);
-    } 
-    // Criação de grafo arbitrário nao direcionado ( Grafo exemplar)
-    // ------------------------------------------------------ //
-    //grafo_insere_duplo(grafo, 0, 1, 2, 0);
-    //grafo_insere_duplo(grafo, 0, 2, 5, 0);
-    //grafo_insere_duplo(grafo, 1, 2, 2, 0);
-    //grafo_insere_duplo(grafo, 2, 3, 5, 0);
-    //grafo_insere_duplo(grafo, 3, 0, 1, 0);
+#include <stdio.h>
+#include <stdlib.h>
 
-    // Grafo do computerphile 
+int main(void) {
+  plan ** grafo = malloc(sizeof**grafo * QPLANETAS); // Inicia o vetor da lista de adjacência
+  int i; // Auxiliar pro for
+  for (i = 0; i < QPLANETAS; i += 1){ // Inicia cada um dos planetas
+      grafo[i] = grafo_inicia(i);
+  } 
+
+      // Grafo do computerphile 
     grafo_insere_duplo(grafo, 0, 1, 3, 0);
     grafo_insere_duplo(grafo, 0, 3, 2, 0);
     grafo_insere_duplo(grafo, 0, 2, 7, 0);
@@ -55,10 +50,13 @@ int main(){
     grafo_insere_duplo(grafo, 9, 11, 2, 0);
     grafo_insere_duplo(grafo, 10, 12, 5, 0);
     grafo_insere_duplo(grafo, 11, 12, 2, 0);
+    grafo_insere_duplo(grafo, 13, 8, 4, 0);
+    grafo_insere_duplo(grafo, 13, 9, 3, 0);
+    grafo_insere_duplo(grafo, 13, 12, 6, 0);
 
-    // ------------------------------------------------------ //
-
-    // --------------- Printa o grafo -------------------- //
+  printf("Vamos iniciar uma nova sessão de entregas!!!\n O grafo que representa os caminhos que podemos tomar será descrito agora e pode ser acessado pelo gitHub\n\n Agora vamos usar a tecnologia staren para calcular a menor rota que passa por todos os planetas e volta no menor tempo possível\n");
+  printf("Grafo\n\n");
+     // --------------- Printa o grafo -------------------- //
     for (i = 0; i < QPLANETAS; i += 1){
         plan * aux = grafo[i];
         printf("\n %d: ",i+1);
@@ -67,37 +65,63 @@ int main(){
             aux = aux->prox;
         }
     }
-    // ---------------------------------------------------- //
+  
+  int * iCusto = malloc(sizeof*iCusto * QPLANETAS);
+  int * gfAnterior = malloc(sizeof*gfAnterior * QPLANETAS);
 
-    // ------------ CALCULA e printa O DIJKSTRA -------------------------// 
-    int * iCusto = malloc(sizeof*iCusto * QPLANETAS);
-    int * gfAnterior = malloc(sizeof*gfAnterior * QPLANETAS);
+  grafo_dijkstra(grafo, 0, iCusto, gfAnterior);
 
-    grafo_dijkstra(grafo, 0, iCusto, gfAnterior);
-    printf("\n Sendo o vertice inicial o de indice 0");
-    printf("\n Custo: ");
+      // Calcula o caminho
+    int ** menorCaminho = malloc(sizeof**menorCaminho * 2);
+    menorCaminho[0] = malloc(sizeof*menorCaminho * QPLANETAS);
+    menorCaminho[1] = malloc(sizeof*menorCaminho);
+    menorCaminho[1][0] = 99999;
+    int * expressao = malloc(sizeof*expressao * QPLANETAS);
     for (i = 0; i < QPLANETAS; i += 1){
-        printf("%d ",iCusto[i]);
+        expressao[i] = QPLANETAS;
     }
-    printf("\n gfAnterior: ");
     for (i = 0; i < QPLANETAS; i += 1){
-        printf("%d ",gfAnterior[i]);
+        menorCaminho[0][i] = QPLANETAS;
     }
-    printf("\n");
-    printf("\n Dijkstra menor distancia entre pos 0 e 2: %d",dijkstra_pesototal(grafo,0,2));
-    printf("\n Dijkstra proximo vertice do menor caminho origem 0 e destino 2: %d",dijkstra_proximo(grafo,0,2));
-    printf("\n");
+    int * distancias = dijkstra_distancias(grafo, 0);
+    nav_vertices (grafo, distancias, expressao, menorCaminho, 0);
 
-    // --------------------------------------------------- //
+  printf("De acordo com os meus calculos, se tudo ocorrer bem, nós demoramos %i horas para voltar, fazendo o seguinte caminho\n\n"menorCaminho[1][0]);
 
-    // ------------ Libera o grafo e as listas ----------------------------- //
+
     for (i = 0; i < QPLANETAS; i += 1){
+      int posicao=menorCaminho[i];
+      if(i==QPLANETAS-1){
+        while(posicao!=menorCaminho[0]){
+          printf("%i ", posicao);
+          posicao=dijkstra_proximo(grafo, posicao,  menorCaminho[0]);
+        }
+      }else{
+        while(posicao!=menorCaminho[i+1]){
+          printf("%i ", posicao);
+          posicao=dijkstra_proximo(grafo, posicao,      menorCaminho[i+1);
+        }
+      }
+    }
+
+  printf("Vamos começar a viagem!!!\n\n");
+  scanf("%c", &r);
+  clear;
+  int i;
+  for(i=0; i<QTPLANETAS; i++){
+    if(i<QTPLANETAS-1)
+      viajePara(expressao[i], expressao[i+1]);
+    else 
+      viajePara(expressao[i], expressao[0]);
+  }
+                                                                     
+  for (i = 0; i < QPLANETAS; i += 1){
         grafo_libera(grafo[i]);
     }
     free(grafo);
     free(iCusto);
     free(gfAnterior);
-    // ---------------------------------------------------------- //
+  return 0;
 }
 
 plan * grafo_inicia(int gfIndice){
